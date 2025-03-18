@@ -72,33 +72,27 @@
 
             if (name) {
                 saveAttendance(name, date, time);
-                loadAttendance();
                 document.getElementById('name').value = ''; // مسح الحقل بعد التسجيل
             }
         });
 
-        // حفظ البيانات في localStorage
+        // حفظ البيانات في Google Sheets
         function saveAttendance(name, date, time) {
-            let attendance = JSON.parse(localStorage.getItem('attendance')) || [];
-            attendance.push({ name, date, time });
-            localStorage.setItem('attendance', JSON.stringify(attendance));
+            fetch('https://script.google.com/macros/s/AKfycbzz4-Ski9QtTbP9NVnwI5upoaIBOK3pChCb0MQAC2ow81NNXIbANxjEGHS9Ch7TGp3N/exec', {
+                method: 'POST',
+                body: JSON.stringify({ name: name, date: date, time: time }),
+            })
+            .then(response => response.text())
+            .then(message => {
+                alert(message);
+                loadAttendance();
+            })
+            .catch(error => alert('حدث خطأ أثناء التسجيل!'));
         }
 
         // تحميل البيانات وعرضها في الجدول
         function loadAttendance() {
-            let attendance = JSON.parse(localStorage.getItem('attendance')) || [];
-            let tableBody = document.getElementById('attendanceTableBody');
-            tableBody.innerHTML = ''; // مسح الجدول قبل التحديث
-
-            attendance.forEach(entry => {
-                let row = document.createElement('tr');
-                row.innerHTML = `
-                    <td>${entry.name}</td>
-                    <td>${entry.date}</td>
-                    <td>${entry.time}</td>
-                `;
-                tableBody.appendChild(row);
-            });
+            // يمكنك إضافة كود لتحميل البيانات من Google Sheets إذا لزم الأمر
         }
 
         // تصدير البيانات إلى ملف Excel
